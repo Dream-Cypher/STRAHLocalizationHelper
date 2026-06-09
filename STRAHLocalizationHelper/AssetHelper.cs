@@ -37,7 +37,7 @@ namespace Helper
         public readonly Dictionary<long, Stream> ReplacedStreams = [];
         public readonly Dictionary<long, Image<Bgra32>> ReplacedImages = [];
 
-        public bool ReplaceMonoBehaviour(MonoBehaviour m_MonoBehaviour, MonoScript m_Script, Dictionary<string, string> textTranslations, Game game = Game.STRAH)
+        public bool ReplaceMonoBehaviour(MonoBehaviour m_MonoBehaviour, MonoScript m_Script, Dictionary<string, string> textTranslations, Game game = Game.STRAH, string language = "zh_Hans")
         {
             var m_ClassName = m_Script.m_ClassName;
             if (!CLASS_FOR_EXPORT.Contains(m_ClassName)) { return false; }
@@ -111,16 +111,16 @@ namespace Helper
                             if (game == Game.STRAH) { return false; }
                             filePath = $"{m_ClassName}_{m_MonoBehaviour.m_PathID:x16}";
                         }
-                        if (!File.Exists($"texts/zh_Hans/{filePath}.json"))
+                        if (!File.Exists($"texts/{language}/{filePath}.json"))
                         {
                             string json = JsonConvert.SerializeObject(type, Formatting.Indented);
-                            File.WriteAllText($"texts/zh_Hans/{filePath}.json", json);
+                            File.WriteAllText($"texts/{language}/{filePath}.json", json);
                             Console.WriteLine($"Extracted (MonoBehaviour): {m_MonoBehaviour.assetsFile.fileName}/{m_ClassName}");
                             return false;
                         }
                         else
                         {
-                            string json = File.ReadAllText($"texts/zh_Hans/{filePath}.json");
+                            string json = File.ReadAllText($"texts/{language}/{filePath}.json");
                             var jObject = JsonConvert.DeserializeObject<JObject>(json);
                             type = JsonHelper.ReadType(m_Type, jObject);
                             ReplaceWith(m_MonoBehaviour.m_PathID, type, m_Type);

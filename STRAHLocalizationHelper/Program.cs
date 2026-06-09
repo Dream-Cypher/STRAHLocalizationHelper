@@ -22,12 +22,13 @@ namespace Helper
             {
                 throw new ArgumentException("Invalid game");
             }
+            var language = Environment.GetEnvironmentVariable("XZ_LANGUAGE") ?? "zh_Hans";
 
             ExtractFiles(platform, game);
-            PatchAsset(platform, game);
+            PatchAsset(platform, game, language);
             PatchBundle(platform, game);
-            PatchPak(platform, game);
-            PatchMetadata(platform, game);
+            PatchPak(platform, game, language);
+            PatchMetadata(platform, game, language);
 
             if (platform == Platform.Switch)
             {
@@ -58,7 +59,7 @@ namespace Helper
             }
         }
 
-        static void PatchAsset(Platform platform, Game game)
+        static void PatchAsset(Platform platform, Game game, string language)
         {
             AssetsManager manager = new()
             {
@@ -73,9 +74,9 @@ namespace Helper
             manager.LoadFolder($"original_files/{platform}");
 
             Dictionary<string, string> textTranslations = [];
-            if (File.Exists("texts/zh_Hans/Text.json"))
+            if (File.Exists($"texts/{language}/Text.json"))
             {
-                textTranslations = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText("texts/zh_Hans/Text.json"))!;
+                textTranslations = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText($"texts/{language}/Text.json"))!;
             }
 
             foreach (var assetsFile in manager.assetsFileList)
@@ -87,7 +88,7 @@ namespace Helper
                     if (@object is MonoBehaviour m_MonoBehaviour
                         && m_MonoBehaviour.m_Script.TryGet(out var m_Script))
                     {
-                        assetHelper.ReplaceMonoBehaviour(m_MonoBehaviour, m_Script, textTranslations, game);
+                        assetHelper.ReplaceMonoBehaviour(m_MonoBehaviour, m_Script, textTranslations, game, language);
                     }
                     else if ((@object is Texture2D m_Texture2D)
                         && File.Exists($"files/images/{m_Texture2D.m_Name}.png"))
@@ -134,7 +135,7 @@ namespace Helper
             {
                 textTranslationsSorted[key] = textTranslations[key];
             }
-            File.WriteAllText("texts/zh_Hans/Text.json", JsonConvert.SerializeObject(textTranslationsSorted, Formatting.Indented));
+            File.WriteAllText($"texts/{language}/Text.json", JsonConvert.SerializeObject(textTranslationsSorted, Formatting.Indented));
         }
 
         static void PatchBundle(Platform platform, Game game)
@@ -171,10 +172,10 @@ namespace Helper
             }
         }
 
-        static void PatchPak(Platform platform, Game game)
+        static void PatchPak(Platform platform, Game game, string language)
         {
             var writer = new XorWriter();
-            foreach (var fileName in Directory.GetFiles("texts/zh_Hans/scrpt.cpk", "*.json"))
+            foreach (var fileName in Directory.GetFiles($"texts/{language}/scrpt.cpk", "*.json"))
             {
                 var rawName = Path.GetFileNameWithoutExtension(fileName);
                 Console.WriteLine($"Writing: {rawName}");
@@ -209,7 +210,7 @@ namespace Helper
             public string text;
         }
 
-        static void PatchMetadata(Platform platform, Game game)
+        static void PatchMetadata(Platform platform, Game game, string language)
         {
             using var br = new BinaryReader(File.OpenRead($"original_files/{platform}/Data/Managed/Metadata/global-metadata.dat"));
 
@@ -229,7 +230,7 @@ namespace Helper
                 lengthPosition[dataPosition + stringLiteralDataOffset] = position;
             }
 
-            var metadataList = JsonConvert.DeserializeObject<List<MetadataItem>>(File.ReadAllText("texts/zh_Hans/Metadata.json"))!;
+            var metadataList = JsonConvert.DeserializeObject<List<MetadataItem>>(File.ReadAllText($"texts/{language}/Metadata.json"))!;
             Directory.CreateDirectory($"out/{platform}/Data/Managed/Metadata");
             using var bw = new BinaryWriter(File.Create($"out/{platform}/Data/Managed/Metadata/global-metadata.dat"));
 
