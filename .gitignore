@@ -398,3 +398,6 @@ FodyWeavers.xsd
 *.sln.iml
 
 launchSettings.json
+
+# Local-only Claude Code context (not published with the repo)
+CLAUDE.md
