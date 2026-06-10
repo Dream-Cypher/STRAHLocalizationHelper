@@ -1,11 +1,11 @@
-# 《夏日重现 Another Horizon》汉化生成工具
+# Summertime Render: Another Horizon — Localization Patch Generator
 
-用于 [汉化主项目](https://github.com/Xzonn/STRAHChsLocalization)。
+Used for the [main localization project](https://github.com/Dream-Cypher/STRAHLocalization) (English fork).
 
-## 依赖项
+## Dependencies
 - [AssetStudio](https://github.com/Xzonn/AssetStudio)
 - [CriPakTools](https://github.com/Xzonn/CriPakTools)
 - [BundleHelper](https://github.com/Xzonn/BundleHelper)
 
-## 启发自
+## Inspired by
 - [YC_English](https://github.com/Thesola10/YC_English)
