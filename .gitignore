@@ -401,3 +401,6 @@ launchSettings.json
 
 # Local-only Claude Code context (not published with the repo)
 CLAUDE.md
+
+# build.ps1 output (self-contained publish output)
+/dist/

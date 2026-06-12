@@ -14,15 +14,17 @@ namespace Helper
         {
             Logger.Default = new LogHelper();
 
-            if (!Enum.TryParse(Environment.GetEnvironmentVariable("XZ_PLATFORM") ?? "Switch", out Platform platform))
+            var config = Config.Load();
+
+            if (!Enum.TryParse(Environment.GetEnvironmentVariable("XZ_PLATFORM") ?? config.Platform ?? "Switch", out Platform platform))
             {
                 throw new ArgumentException("Invalid platform");
             }
-            if (!Enum.TryParse(Environment.GetEnvironmentVariable("XZ_GAME") ?? "STRAH", out Game game))
+            if (!Enum.TryParse(Environment.GetEnvironmentVariable("XZ_GAME") ?? config.Game ?? "STRAH", out Game game))
             {
                 throw new ArgumentException("Invalid game");
             }
-            var language = Environment.GetEnvironmentVariable("XZ_LANGUAGE") ?? "zh_Hans";
+            var language = Environment.GetEnvironmentVariable("XZ_LANGUAGE") ?? config.Language ?? "en";
 
             ExtractFiles(platform, game);
             PatchAsset(platform, game, language);
